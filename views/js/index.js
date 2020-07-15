@@ -65,6 +65,16 @@ var app = new Vue({
                         that.$message("系统消息: " + resMes.data)
                         break
                     case 1: //用户状态消息
+                        if (resMes.data == "offline") {
+                            for (var i = 0; i < that.onlineUserList.length; i++) {
+                                if (that.onlineUserList[i] == resMes.from_user_name) {
+                                    //下线
+                                    that.$message(resMes.from_user_name + "下线了")
+                                    that.onlineUserList.splice(i, 1)
+                                }
+                            }
+                        }
+                        break
                     case 2: //聊天消息
                     case 3: //群聊消息
                         that.reUserMes.push(resMes)
@@ -73,7 +83,7 @@ var app = new Vue({
                     case 4: //隐藏消息
                         //心跳检测
                         if (resMes.code == 200) {
-
+                            console.log("sadf")
                         }
                         break
                 }

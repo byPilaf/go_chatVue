@@ -30,7 +30,10 @@ func WS() {
 	//要发送的数据
 	for message := range models.WebSocketChann {
 		for _, user := range models.OnlineUsersMap {
-			go user.WsConn.WriteMessage(websocket.TextMessage, message)
+			err := user.WsConn.WriteMessage(websocket.TextMessage, message)
+			if err != nil {
+				fmt.Println("user.WsConn.WriteMessage err=", err)
+			}
 		}
 	}
 }

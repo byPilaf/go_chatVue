@@ -29,5 +29,6 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 
 		//绑定已在线用户
 		models.OnlineUsersMap[userToken].WsConn = wsConn
+		go models.OnlineUsersMap[userToken].BeatLine() //心跳检测
 	}
 }

@@ -1,6 +1,9 @@
 package models
 
 import (
+	"encoding/json"
+	"fmt"
+	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -17,6 +20,7 @@ type User struct {
 	Pass string `json:"pass" gorm:"not null"`
 	//WsConn 注册的ws连接器
 	WsConn *websocket.Conn
+	Mutex  sync.Mutex
 	Token  string
 	//todo 待发送的私人消息队列
 	//todo 接收到的私人消息队列
@@ -28,14 +32,17 @@ func (user *User) BeatLine() {
 		Code:    200,
 		MesType: HiddenMesType,
 	}
+	mesJSON, _ := json.Marshal(beatMes)
 
 	for {
-		err = user.WsConn.WriteJSON(&beatMes)
+		//这里并发写入了???
+		err := user.WsConn.WriteMessage(websocket.TextMessage, mesJSON)
 		if err != nil {
-			user.OffLine()
+			fmt.Println("err:", err)
+			go user.OffLine()
 			break
 		}
-		time.Sleep(time.Second * 1)
+		time.Sleep(time.Second * 5)
 	}
 
 	return
@@ -44,5 +51,15 @@ func (user *User) BeatLine() {
 //OffLine 用户下线
 func (user *User) OffLine() {
 	//从在线列表排除
-	delete(OnlineUsersMap)
+	delete(OnlineUsersMap, user.Token)
+	//向客户端发送下线消息
+	offLineMes := Mes{
+		FromUserName:  user.Name,
+		FromUserToken: user.Token,
+		MesType:       UserStatusMesType,
+		Code:          200,
+		Data:          "offline",
+	}
+	mesJSON, _ := json.Marshal(offLineMes)
+	WebSocketChann <- mesJSON
 }

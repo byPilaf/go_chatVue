@@ -57,6 +57,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 		user.Token = userToken                   //添加token
 		models.OnlineUsersMap[userToken] = &user //添加到在线用户列表
+
 		reMes.Code = 200
 		reMes.Data = "登陆成功"
 		reMes.FromUserToken = userToken
