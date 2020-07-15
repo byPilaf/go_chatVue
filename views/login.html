@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>login</title>
+    <!-- 引入样式 -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/element-ui/2.13.2/theme-chalk/index.css" rel="stylesheet">
+    <link rel="stylesheet" href="/style/index.css">
+</head>
+
+<body>
+    <div id="app">
+        <div class="login">
+            <h1>Login</h1>
+            <el-row :gutter="10">
+                <el-col :span="24">
+                    <div class="grid-content">
+                        <el-input v-model="userInfo.name" placeholder="请输入用户名"></el-input>
+                    </div>
+                </el-col>
+            </el-row>
+            <br>
+            <el-row :gutter="10">
+                <el-col :span="24">
+                    <div class="grid-content">
+                        <el-input v-model="userInfo.pass" placeholder="请输入密码" show-password></el-input>
+                    </div>
+                </el-col>
+            </el-row>
+            <br>
+            <el-row>
+                <el-button type="primary" class="login-btn" @click="login">登 入 / 注 册</el-button>
+            </el-row>
+        </div>
+        <el-dialog title="提示" :visible.sync="dialogVisible" width="30%">
+            <span>[{message}]</span>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible = false">确 定</el-button>
+            </span>
+        </el-dialog>
+    </div>
+    <!-- 引入组件库 -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.11/vue.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.19.2/axios.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/element-ui/2.13.2/index.js"></script>
+    <script src="/js/login.js"></script>
+</body>
+
+</html>

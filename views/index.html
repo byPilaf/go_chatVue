@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <!-- 引入样式 -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/element-ui/2.13.2/theme-chalk/index.css" rel="stylesheet">
+    <link rel="stylesheet" href="/style/index.css">
+    <style type="text/css">
+        ul,
+        li {
+            height: 35px;
+            list-style: none;
+        }
+
+        /* .mes-box-other {
+            padding: 5px;
+            color: white;
+            background-color: #67C23A;
+            border-radius: 5px;
+        } */
+
+        .chat_box {
+            overflow: auto;
+            padding: 15px;
+            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1)
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <el-container>
+            <el-header>Header</el-header>
+            <el-container>
+                <el-aside>
+                    <el-row class="tac">
+                        <el-col :span="12">
+                            <h5>在线列表</h5>
+                            <el-menu default-active="2" class="el-menu-vertical-demo">
+                                <el-menu-item v-for="item in onlineUserList" index="0">
+                                    <i class="el-icon-user"></i>
+                                    <span slot="title">[{item}]</span>
+                                </el-menu-item>
+                            </el-menu>
+                        </el-col>
+                    </el-row>
+                </el-aside>
+                <el-container>
+                    <el-main>
+                        <el-row>
+                            <el-col :span="15">
+                                <div class="chat_box" style="height: 600px;" v-scroll="{auto: true}">
+                                    <ul class="infinite-list">
+                                        <li v-for="item in reUserMes">
+                                            <div class="new_message"
+                                                :style="{float:(item.from_user_token == user_token ? 'right':'left')}">
+                                                <span style="color: black;">[{item.from_user_name}]: &nbsp;</span>
+                                                <span v-if="item.from_user_token == user_token"
+                                                    class="mes-box-self">[{item.data}]</span>
+                                                <span v-if="item.from_user_token != user_token"
+                                                    class="mes-box-other">[{item.data}]</span>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </el-col>
+                        </el-row>
+                    </el-main>
+                    <el-footer>
+                        <el-row>
+                            <div class="shuru">
+                                <el-col :span="13">
+                                    <el-input v-model="input" placeholder="请输入内容" @keyup.enter.native="sendMes">
+                                    </el-input>
+                                </el-col>
+                                &nbsp; &nbsp;
+                                <el-button type="primary" @click="sendMes">发送</el-button>
+                            </div>
+                        </el-row>
+                    </el-footer>
+                </el-container>
+            </el-container>
+        </el-container>
+        <el-dialog title="提示" :visible.sync="dialogVisible" width="30%">
+            <span>[{message}]</span>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="tologin">确 定</el-button>
+            </span>
+        </el-dialog>
+    </div>
+    <!-- 引入组件库 -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.11/vue.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.19.2/axios.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/element-ui/2.13.2/index.js"></script>
+    <script src="/js/index.js"></script>
+</body>
+
+</html>
