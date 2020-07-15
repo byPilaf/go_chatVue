@@ -3,7 +3,6 @@ package models
 import (
 	"encoding/json"
 	"fmt"
-	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -20,7 +19,6 @@ type User struct {
 	Pass string `json:"pass" gorm:"not null"`
 	//WsConn 注册的ws连接器
 	WsConn *websocket.Conn
-	Mutex  sync.Mutex
 	Token  string
 	//todo 待发送的私人消息队列
 	//todo 接收到的私人消息队列
