@@ -35,7 +35,7 @@ func (user *User) BeatLine() {
 	mesJSON, _ := json.Marshal(beatMes)
 
 	for {
-		//这里并发写入了???
+		//todo这里并发写入了???
 		err := user.WsConn.WriteMessage(websocket.TextMessage, mesJSON)
 		if err != nil {
 			fmt.Println("err:", err)
