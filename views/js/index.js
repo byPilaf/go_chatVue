@@ -101,7 +101,6 @@ var app = new Vue({
                 }
                 axios.post("/sendMes", sendData)
                     .then(function (response) {
-
                         if (response.data.code != "200") {
                             // that.dialogVisible = true
                             // that.message = response.data.data

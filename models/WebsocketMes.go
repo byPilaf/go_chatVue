@@ -5,16 +5,6 @@ import (
 	"fmt"
 )
 
-var (
-	//WebSocketChann 向客户端发送websocket数据管道
-	//群发消息
-	WebSocketChann chan []byte
-)
-
-func init() {
-	WebSocketChann = make(chan []byte)
-}
-
 //WebSocketMessage websocket消息
 type WebSocketMessage struct {
 	Mes
@@ -31,5 +21,7 @@ func (wsMes *WebSocketMessage) SendAllUserMes() {
 	}
 
 	//放入管道
-	WebSocketChann <- sendMes
+	for _, user := range OnlineUsersMap {
+		user.UserWriteChan <- sendMes
+	}
 }

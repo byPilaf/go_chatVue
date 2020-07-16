@@ -84,22 +84,29 @@ func GetUserMesHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		//接收json
 		decoder := json.NewDecoder(r.Body)
-		var message models.Mes
+		var message models.Mes //接收到的消息
 		err := decoder.Decode(&message)
 		if err == nil {
 
-			reMes.Code = 200
-			reMes.MesType = models.ResponseMesType
-			reJSON, _ := json.Marshal(reMes)
+			if models.OnlineUsersMap[message.FromUserToken] != nil {
 
-			//根据消息类型处理不同方法
-			switch message.MesType {
-			case models.GroupMesType:
-				message.FromUserName = models.OnlineUsersMap[message.FromUserToken].Name
-				sendMes, _ := json.Marshal(message)
-				models.WebSocketChann <- sendMes
-				w.Write(reJSON)
-				return
+				reMes.Code = 200
+				reMes.MesType = models.ResponseMesType
+				reJSON, _ := json.Marshal(reMes)
+
+				//根据消息类型处理不同方法
+				switch message.MesType {
+				case models.GroupMesType:
+					//创建群发的websocekt消息
+					var sendMes models.WebSocketMessage
+					sendMes.FromUserName = models.OnlineUsersMap[message.FromUserToken].Name
+					sendMes.Data = message.Data
+					sendMes.MesType = message.MesType
+					sendMes.SendAllUserMes()
+
+					w.Write(reJSON)
+					return
+				}
 			}
 		}
 	}

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 	"webchat/models"
 
@@ -22,16 +23,18 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		userTokenList := r.URL.Query()["user_token"]
 		userToken := userTokenList[0]
-		//todo 判断当前用户是否在线,再选择进行连接
-		if models.OnlineUsersMap[userToken] == nil {
-			wsConn, err := upgrader.Upgrade(w, r, nil)
-			if err != nil {
-				return
-			}
-
-			//绑定已在线用户
-			models.OnlineUsersMap[userToken].WsConn = wsConn
-			go models.OnlineUsersMap[userToken].BeatLine() //心跳检测
+		//判断当前用户是否在线,再选择进行连接
+		wsConn, err := upgrader.Upgrade(w, r, nil)
+		if err != nil {
+			fmt.Println("upgrader.Upgrade(w, r, nil) error :", err)
+			return
 		}
+
+		//绑定已在线用户
+		user := models.OnlineUsersMap[userToken]
+		user.WsConn = wsConn
+		user.CreatChannel()
+		go user.WaitForSendMes()
+		go user.BeatLine() //心跳检测
 	}
 }

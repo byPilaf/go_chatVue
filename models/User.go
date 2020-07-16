@@ -18,10 +18,21 @@ type User struct {
 	Name string `json:"name" gorm:"not null;unique"`
 	Pass string `json:"pass" gorm:"not null"`
 	//WsConn 注册的ws连接器
-	WsConn *websocket.Conn
-	Token  string
-	//todo 待发送的私人消息队列
-	//todo 接收到的私人消息队列
+	WsConn *websocket.Conn `gorm:"-"`
+	Token  string          `gorm:"-"`
+	//待发送的私人消息队列
+	UserWriteChan chan []byte `gorm:"-"`
+	// 接收到的私人消息队列
+	UserReadChan chan []byte `gorm:"-"`
+	//websocket 当前用户状态,0=下线, 1=在线
+	status int `gorm:"-"`
+}
+
+//CreatChannel 创建频道
+func (user *User) CreatChannel() {
+	user.UserWriteChan = make(chan []byte, 100)
+	user.status = 1
+	fmt.Println(user.Name, "上线了")
 }
 
 //BeatLine 用户心跳检测
@@ -33,31 +44,39 @@ func (user *User) BeatLine() {
 	mesJSON, _ := json.Marshal(beatMes)
 
 	for {
-		//todo这里并发写入了???
-		err := user.WsConn.WriteMessage(websocket.TextMessage, mesJSON)
-		if err != nil {
-			fmt.Println("err:", err)
-			go user.OffLine()
+		if user.status == 0 {
 			break
 		}
+		//写入管道, 再专门发送
+		user.UserWriteChan <- mesJSON
 		time.Sleep(time.Second * 5)
 	}
-
-	return
 }
 
 //OffLine 用户下线
 func (user *User) OffLine() {
+	fmt.Println(user.Name, "下线了")
 	//从在线列表排除
 	delete(OnlineUsersMap, user.Token)
+
 	//向客户端发送下线消息
-	offLineMes := Mes{
-		FromUserName:  user.Name,
-		FromUserToken: user.Token,
-		MesType:       UserStatusMesType,
-		Code:          200,
-		Data:          "offline",
+	var offLineMes WebSocketMessage
+	offLineMes.FromUserName = user.Name
+	offLineMes.FromUserToken = user.Token
+	offLineMes.MesType = UserStatusMesType
+	offLineMes.Code = 200
+	offLineMes.Data = "offline"
+
+	user.status = 0
+	offLineMes.SendAllUserMes()
+}
+
+//WaitForSendMes 等待发送数据
+func (user *User) WaitForSendMes() {
+	for message := range user.UserWriteChan {
+		err := user.WsConn.WriteMessage(websocket.TextMessage, message)
+		if err != nil {
+			user.OffLine()
+		}
 	}
-	mesJSON, _ := json.Marshal(offLineMes)
-	WebSocketChann <- mesJSON
 }
