@@ -6,15 +6,18 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/jinzhu/gorm"
+	// "github.com/jinzhu/gorm"
 )
 
 //OnlineUsersMap 当前在线用户列表 [用户token]用户模型
 var OnlineUsersMap map[string]*User = make(map[string]*User)
 
+//UsersMap 已注册的用户列表
+var UsersMap map[string]*User = make(map[string]*User)
+
 //User 用户模型
 type User struct {
-	gorm.Model
+	// gorm.Model
 	Name string `json:"name" gorm:"not null;unique"`
 	Pass string `json:"pass" gorm:"not null"`
 	//WsConn 注册的ws连接器

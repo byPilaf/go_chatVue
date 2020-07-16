@@ -30,8 +30,14 @@ var app = new Vue({
                 axios.post("", { "user_token": user_token })
                     .then(function (response) {
                         if (response.data.code != "200") {
-                            that.dialogVisible = true
-                            that.message = response.data.data
+                            that.$alert(response.data.data, '提示', {
+                                confirmButtonText: '确定',
+                                callback: function () {
+                                    window.location.replace("/login")
+                                }
+                            });
+                            // that.dialogVisible = true
+                            // that.message = response.data.data
                         } else {
                             that.user_token = user_token
                             that.ws() //连接websocket服务器as
@@ -111,7 +117,7 @@ var app = new Vue({
                     case 4: //隐藏消息
                         //心跳检测
                         if (resMes.code == 200) {
-                            console.log("sadf")
+
                         }
                         break
                 }

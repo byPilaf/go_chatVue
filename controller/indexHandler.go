@@ -100,6 +100,7 @@ func GetUserMesHandler(w http.ResponseWriter, r *http.Request) {
 					sendMes.FromUserName = models.OnlineUsersMap[message.FromUserToken].Name
 					sendMes.Data = message.Data
 					sendMes.MesType = message.MesType
+					sendMes.FromUserToken = message.FromUserToken
 					sendMes.SendAllUserMes()
 
 					w.Write(reJSON)
