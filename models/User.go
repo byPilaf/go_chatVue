@@ -57,8 +57,6 @@ func (user *User) BeatLine() {
 //OffLine 用户下线
 func (user *User) OffLine() {
 	fmt.Println(user.Name, "下线了")
-	//从在线列表排除
-	delete(OnlineUsersMap, user.Token)
 
 	//向客户端发送下线消息
 	var offLineMes WebSocketMessage
@@ -70,6 +68,9 @@ func (user *User) OffLine() {
 
 	user.Status = 0
 	offLineMes.SendAllUserMes()
+
+	//从在线列表排除
+	delete(OnlineUsersMap, user.Token)
 }
 
 //WaitForSendMes 等待发送数据

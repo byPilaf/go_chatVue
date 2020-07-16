@@ -45,23 +45,25 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		//生成user token
 		userToken := utils.GetToken()
 
-		//查询
-		utils.DbMysql.Where("name = ?", &loginUser.Name).First(&user)
-		if user.ID != 0 {
-			if loginUser.Pass != user.Pass {
-				reMes.Code = 403
-				reMes.Data = "密码错误"
-				reJSON, _ := json.Marshal(reMes)
-				w.Write(reJSON)
-				// fmt.Fprintf(w, `{"code":403, "msg":"密码错误"}`)
-				return
-			}
-		} else {
-			//注册
-			utils.DbMysql.NewRecord(loginUser)
-			utils.DbMysql.Create(&loginUser)
-			user = loginUser
-		}
+		//查询数据库
+		// utils.DbMysql.Where("name = ?", &loginUser.Name).First(&user)
+		// if user.ID != 0 {
+		// 	if loginUser.Pass != user.Pass {
+		// 		reMes.Code = 403
+		// 		reMes.Data = "密码错误"
+		// 		reJSON, _ := json.Marshal(reMes)
+		// 		w.Write(reJSON)
+		// 		// fmt.Fprintf(w, `{"code":403, "msg":"密码错误"}`)
+		// 		return
+		// 	}
+		// } else {
+		// 	//注册
+		// 	utils.DbMysql.NewRecord(loginUser)
+		// 	utils.DbMysql.Create(&loginUser)
+		// 	user = loginUser
+		// }
+
+		user = loginUser ///
 
 		user.Token = userToken                   //添加token
 		models.OnlineUsersMap[userToken] = &user //添加到在线用户列表

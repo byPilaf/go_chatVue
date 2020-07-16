@@ -75,11 +75,22 @@ var app = new Vue({
                         break
                     case 1: //用户状态消息
                         if (resMes.data == "offline") {
-                            for (var i = 0; i < that.onlineUserList.length; i++) {
-                                if (that.onlineUserList[i] == resMes.from_user_name) {
-                                    //下线
-                                    that.$message(resMes.from_user_name + "下线了")
-                                    that.onlineUserList.splice(i, 1)
+                            if (resMes.from_user_token == that.user_token) {
+                                //自己下线了
+                                //连接失败,重新登陆
+                                that.$alert('您已经在其他地方登录', '提示', {
+                                    confirmButtonText: '确定',
+                                    callback: function () {
+                                        window.location.replace("/login")
+                                    }
+                                });
+                            } else {
+                                for (var i = 0; i < that.onlineUserList.length; i++) {
+                                    if (that.onlineUserList[i] == resMes.from_user_name) {
+                                        //下线
+                                        that.$message(resMes.from_user_name + "下线了")
+                                        that.onlineUserList.splice(i, 1)
+                                    }
                                 }
                             }
                         }
