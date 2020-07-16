@@ -24,14 +24,15 @@ type User struct {
 	UserWriteChan chan []byte `gorm:"-"`
 	// 接收到的私人消息队列
 	UserReadChan chan []byte `gorm:"-"`
-	//websocket 当前用户状态,0=下线, 1=在线
-	status int `gorm:"-"`
+	//Status 当前用户状态,0=下线, 1=在线
+	Status int `gorm:"-"`
 }
 
 //CreatChannel 创建频道
 func (user *User) CreatChannel() {
 	user.UserWriteChan = make(chan []byte, 100)
-	user.status = 1
+	user.UserReadChan = make(chan []byte, 100)
+	user.Status = 1
 	fmt.Println(user.Name, "上线了")
 }
 
@@ -42,9 +43,9 @@ func (user *User) BeatLine() {
 		MesType: HiddenMesType,
 	}
 	mesJSON, _ := json.Marshal(beatMes)
-
 	for {
-		if user.status == 0 {
+
+		if user.Status == 0 {
 			break
 		}
 		//写入管道, 再专门发送
@@ -67,7 +68,7 @@ func (user *User) OffLine() {
 	offLineMes.Code = 200
 	offLineMes.Data = "offline"
 
-	user.status = 0
+	user.Status = 0
 	offLineMes.SendAllUserMes()
 }
 

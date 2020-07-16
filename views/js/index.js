@@ -58,6 +58,15 @@ var app = new Vue({
         ws: function () {
             var that = this
             var ws = new WebSocket("ws://127.0.0.1:7999/ws?user_token=" + that.user_token)
+            ws.onerror = function (err) {
+                //连接失败,重新登陆
+                that.$alert('请重新登陆', '提示', {
+                    confirmButtonText: '确定',
+                    callback: function () {
+                        window.location.replace("/login")
+                    }
+                });
+            };
             ws.onmessage = function (event) {
                 var resMes = JSON.parse(event.data)
                 switch (resMes.mes_type) {
@@ -71,6 +80,14 @@ var app = new Vue({
                                     //下线
                                     that.$message(resMes.from_user_name + "下线了")
                                     that.onlineUserList.splice(i, 1)
+                                }
+                            }
+                        }
+                        if (resMes.data == "online") {
+                            if (that.onlineUserList.indexOf(resMes.from_user_name) == -1) {
+                                that.onlineUserList.push(resMes.from_user_name)
+                                if (that.user_token != resMes.from_user_token) {
+                                    that.$message(resMes.from_user_name + "上线了")
                                 }
                             }
                         }
@@ -101,14 +118,17 @@ var app = new Vue({
                 }
                 axios.post("/sendMes", sendData)
                     .then(function (response) {
-                        if (response.data.code != "200") {
-                            // that.dialogVisible = true
-                            // that.message = response.data.data
-                        } else {
-                            //发送成功
+                        if (response.data.code == "200") {
                             that.input = ""
+                        } else if (response.data.code == "401") {
+                            that.dialogVisible = true
+                            that.message = response.data.data
+                        } else {
+                            that.$message.error(response.data.data + ", 发送失败")
                         }
-                    }, function (err) { })
+                    }, function (err) {
+                        that.$message.error("发送失败")
+                    })
             }
         },
         //自动滚动到底部

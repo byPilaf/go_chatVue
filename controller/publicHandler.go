@@ -33,6 +33,15 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			// fmt.Fprintf(w, `{"code":401, "msg":"请输入有效值"}`)
 			return
 		}
+
+		//在用户列表中判断是否已经登陆
+		for _, onlineUser := range models.OnlineUsersMap {
+			if onlineUser.Name == loginUser.Name {
+				//已经在线
+				onlineUser.OffLine() //顶掉
+			}
+		}
+
 		//生成user token
 		userToken := utils.GetToken()
 
@@ -52,7 +61,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			utils.DbMysql.NewRecord(loginUser)
 			utils.DbMysql.Create(&loginUser)
 			user = loginUser
-
 		}
 
 		user.Token = userToken                   //添加token

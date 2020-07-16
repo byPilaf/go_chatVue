@@ -32,7 +32,7 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	_, ok := models.OnlineUsersMap[token["user_token"]]
 	if !ok {
 		resMes.Code = 403
-		resMes.Data = "请重新登陆"
+		resMes.Data = "请登陆"
 		reJSON, _ := json.Marshal(resMes)
 		w.Write(reJSON)
 		// fmt.Fprintf(w, `{"code":"403","msg":"请重新登陆"}`)
@@ -87,9 +87,7 @@ func GetUserMesHandler(w http.ResponseWriter, r *http.Request) {
 		var message models.Mes //接收到的消息
 		err := decoder.Decode(&message)
 		if err == nil {
-
 			if models.OnlineUsersMap[message.FromUserToken] != nil {
-
 				reMes.Code = 200
 				reMes.MesType = models.ResponseMesType
 				reJSON, _ := json.Marshal(reMes)
@@ -107,6 +105,9 @@ func GetUserMesHandler(w http.ResponseWriter, r *http.Request) {
 					w.Write(reJSON)
 					return
 				}
+			} else {
+				reMes.Code = 401
+				reMes.Data = "请重新登陆"
 			}
 		}
 	}
