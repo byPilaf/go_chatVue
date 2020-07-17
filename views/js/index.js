@@ -71,15 +71,15 @@ var app = new Vue({
             var host = window.location.hostname + ":" + window.location.port
             console.log(host)
             var ws = new WebSocket("ws://" + host + "/ws?user_token=" + that.user_token)
-            ws.onerror = function (err) {
-                //连接失败,重新登陆
-                that.$alert('请重新登陆', '提示', {
-                    confirmButtonText: '确定',
-                    callback: function () {
-                        window.location.replace("/login")
-                    }
-                });
-            }
+            // ws.onerror = function (err) {
+            //     //连接失败,重新登陆
+            //     that.$alert('请重新登陆', '提示', {
+            //         confirmButtonText: '确定',
+            //         callback: function () {
+            //             window.location.replace("/login")
+            //         }
+            //     });
+            // }
 
             ws.onmessage = function (event) {
                 var resMes = JSON.parse(event.data)
