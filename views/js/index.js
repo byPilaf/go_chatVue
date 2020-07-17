@@ -66,6 +66,7 @@ var app = new Vue({
             var that = this
             while (that.flag) {
                 that.sleep(5000); // 延时函数，单位ms
+                console.log("err")
                 var ws = new WebSocket("ws://127.0.0.1:7999/ws?user_token=" + that.user_token)
                 ws.onerror = function (err) {
                     //连接失败,重新登陆
