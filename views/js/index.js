@@ -18,6 +18,7 @@ var app = new Vue({
         input: "",
         //收到的消息列表
         reUserMes: [],
+        flag: true,
     },
     methods: {
         checkUser: function () {
@@ -124,42 +125,38 @@ var app = new Vue({
                         break
                 }
             }
-        }
-    },
-    sleep: function (d) {
-        for (var t = Date.now(); Date.now() - t <= d;);
-    },
-    sendMes: function () {
-        var that = this
-        //判断内容
-        if (that.input != "") {
-            //发送的消息
-            var sendData = {
-                "from_user_token": that.user_token,
-                "mes_type": 3,
-                "data": that.input,
+        },
+        sendMes: function () {
+            var that = this
+            //判断内容
+            if (that.input != "") {
+                //发送的消息
+                var sendData = {
+                    "from_user_token": that.user_token,
+                    "mes_type": 3,
+                    "data": that.input,
+                }
+                axios.post("/sendMes", sendData)
+                    .then(function (response) {
+                        if (response.data.code == "200") {
+                            that.input = ""
+                        } else if (response.data.code == "401") {
+                            that.dialogVisible = true
+                            that.message = response.data.data
+                        } else {
+                            that.$message.error(response.data.data + ", 发送失败")
+                        }
+                    }, function (err) {
+                        that.$message.error("发送失败")
+                    })
             }
-            axios.post("/sendMes", sendData)
-                .then(function (response) {
-                    if (response.data.code == "200") {
-                        that.input = ""
-                    } else if (response.data.code == "401") {
-                        that.dialogVisible = true
-                        that.message = response.data.data
-                    } else {
-                        that.$message.error(response.data.data + ", 发送失败")
-                    }
-                }, function (err) {
-                    that.$message.error("发送失败")
-                })
-        }
+        },
+        //自动滚动到底部
+        scrollToBottom: function () {
+            this.$nextTick(() => {
+                var container = this.$el.querySelector(".chat_box");
+                container.scrollTop = container.scrollHeight;
+            });
+        },
     },
-    //自动滚动到底部
-    scrollToBottom: function () {
-        this.$nextTick(() => {
-            var container = this.$el.querySelector(".chat_box");
-            container.scrollTop = container.scrollHeight;
-        });
-    },
-},
 })
