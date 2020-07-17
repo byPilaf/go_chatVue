@@ -24,25 +24,21 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 		userTokenList := r.URL.Query()["user_token"]
 		userToken := userTokenList[0]
 
-		//绑定已在线用户
-		user := models.OnlineUsersMap[userToken]
-		if user.WsConn != nil {
-			//重新登陆
-			fmt.Println("flush")
-			// user.OffLine()
-			return
-		}
-
 		wsConn, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
 			fmt.Println("upgrader.Upgrade(w, r, nil) error :", err)
 			return
 		}
 
+		//绑定已在线用户
+		user := models.OnlineUsersMap[userToken]
 		user.WsConn = wsConn
-		user.CreatChannel()
-		go user.WaitForSendMes()
-		go user.BeatLine() //心跳检测
+		oldConn := user.WsConn
+		if oldConn == nil {
+			user.CreatChannel()
+			go user.WaitForSendMes()
+			go user.BeatLine() //心跳检测
+		}
 
 		//发送上线通知
 		var mes models.WebSocketMessage
