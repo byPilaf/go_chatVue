@@ -63,7 +63,8 @@ var app = new Vue({
         },
         ws: function () {
             var that = this
-            while (true) {
+            flag = true
+            while (flag) {
                 var ws = new WebSocket("ws://127.0.0.1:7999/ws?user_token=" + that.user_token)
                 ws.onerror = function (err) {
                     //连接失败,重新登陆
@@ -80,6 +81,7 @@ var app = new Vue({
 
                 ws.onmessage = function (event) {
                     var resMes = JSON.parse(event.data)
+                    flag = false
                     switch (resMes.mes_type) {
                         case 0: //系统消息
                             that.$message("系统消息: " + resMes.data)
@@ -126,7 +128,6 @@ var app = new Vue({
                             }
                             break
                     }
-                    break
                 }
             }
         },
