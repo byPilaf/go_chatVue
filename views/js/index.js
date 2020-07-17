@@ -66,6 +66,7 @@ var app = new Vue({
             var that = this
             while (that.flag) {
                 that.sleep(2000); // 延时函数，单位ms
+                console.log("err websocket")
                 var ws = new WebSocket("ws://127.0.0.1:7999/ws?user_token=" + that.user_token)
                 ws.onmessage = function (event) {
                     var resMes = JSON.parse(event.data)
@@ -121,7 +122,7 @@ var app = new Vue({
                     //连接失败,重新登陆
                     //尝试重新连接
                     that.$message.error(err)
-                    console.log(err)
+                    
                     that.flag = true
                     // that.$alert('请重新登陆', '提示', {
                     //     confirmButtonText: '确定',
