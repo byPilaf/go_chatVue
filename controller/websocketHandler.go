@@ -34,8 +34,11 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 		user := models.OnlineUsersMap[userToken]
 		user.WsConn = wsConn
 		oldConn := user.WsConn
+		if oldConn != nil {
+			close(user.UserWriteChan)
+		}
+		user.CreatChannel()
 		if oldConn == nil {
-			user.CreatChannel()
 			go user.WaitForSendMes()
 			go user.BeatLine() //心跳检测
 		}
