@@ -18,7 +18,7 @@ var app = new Vue({
         input: "",
         //收到的消息列表
         reUserMes: [],
-        flag = false,
+        flag: false,
     },
     methods: {
         checkUser: function () {
