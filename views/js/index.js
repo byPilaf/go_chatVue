@@ -65,7 +65,7 @@ var app = new Vue({
             var that = this
             flag = true
             while (flag) {
-                sleep(2000); // 延时函数，单位ms
+                that.sleep(2000); // 延时函数，单位ms
                 var ws = new WebSocket("ws://127.0.0.1:7999/ws?user_token=" + that.user_token)
                 ws.onmessage = function (event) {
                     var resMes = JSON.parse(event.data)
@@ -130,6 +130,9 @@ var app = new Vue({
                     // });
                 };
             }
+        },
+        sleep: function (d) {
+            for (var t = Date.now(); Date.now() - t <= d;);
         },
         sendMes: function () {
             var that = this
