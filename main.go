@@ -15,5 +15,5 @@ func main() {
 	http.HandleFunc("/sendMes", controller.GetUserMesHandler)
 
 	http.HandleFunc("/ws", controller.WebSocketHandler) //websocket
-	http.ListenAndServe(":7999", nil)
+	http.ListenAndServe(":10241", nil)
 }
