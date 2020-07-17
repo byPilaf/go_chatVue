@@ -64,8 +64,8 @@ var app = new Vue({
         },
         ws: function () {
             var that = this
-            console.log(window.location.hostname)
-            var ws = new WebSocket("ws://127.0.0.1:7999/ws?user_token=" + that.user_token)
+            var host = window.location.hostname + ":" + window.location.port
+            var ws = new WebSocket("ws://" + host + "/ ws ? user_token = " + that.user_token)
             ws.onerror = function (err) {
                 //连接失败,重新登陆
                 that.$alert('请重新登陆', '提示', {
