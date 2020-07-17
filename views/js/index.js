@@ -45,8 +45,12 @@ var app = new Vue({
                         }
                     }, function (err) { })
             } else {
-                that.dialogVisible = true
-                that.message = "未登录"
+                that.$alert("请登录", '提示', {
+                    confirmButtonText: '确定',
+                    callback: function () {
+                        window.location.replace("/login")
+                    }
+                });
             }
         },
         tologin: function () {
