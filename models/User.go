@@ -81,6 +81,7 @@ func (user *User) WaitForSendMes() {
 	for message := range user.UserWriteChan {
 		err := user.WsConn.WriteMessage(websocket.TextMessage, message)
 		if err != nil {
+			fmt.Println("user.WsConn.WriteMessage error :", err)
 			user.OffLine()
 		}
 	}
