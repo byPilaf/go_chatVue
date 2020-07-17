@@ -66,9 +66,24 @@ var app = new Vue({
             var that = this
             while (that.flag) {
                 that.sleep(5000); // 延时函数，单位ms
-               
+
                 var ws = new WebSocket("ws://127.0.0.1:7999/ws?user_token=" + that.user_token)
+
+                ws.onerror = function (err) {
+                    //连接失败,重新登陆
+                    //尝试重新连接
+                    that.$message.error("err websocket")
+                    console.log(err)
+                    // that.$alert('请重新登陆', '提示', {
+                    //     confirmButtonText: '确定',
+                    //     callback: function () {
+                    //         window.location.replace("/login")
+                    //     }
+                    // });
+                }
+
                 ws.onmessage = function (event) {
+                    console.log("asd")
                     var resMes = JSON.parse(event.data)
                     that.flag = false
                     switch (resMes.mes_type) {
@@ -118,18 +133,7 @@ var app = new Vue({
                             break
                     }
                 }
-                ws.onerror = function (err) {
-                    //连接失败,重新登陆
-                    //尝试重新连接
-                    that.$message.error("err websocket")
-                    console.log(err)
-                    // that.$alert('请重新登陆', '提示', {
-                    //     confirmButtonText: '确定',
-                    //     callback: function () {
-                    //         window.location.replace("/login")
-                    //     }
-                    // });
-                };
+
             }
         },
         sleep: function (d) {
