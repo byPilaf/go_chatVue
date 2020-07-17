@@ -65,16 +65,17 @@ var app = new Vue({
                     }
                 }, function (err) { })
         },
-
+        sleep: function (d) {
+            for (var t = Date.now(); Date.now() - t <= d;);
+        },
         ws: function () {
             var that = this
             var host = window.location.hostname + ":" + window.location.port
             var ws = new WebSocket("ws://" + host + "/wws?user_token=" + that.user_token)
             ws.onerror = function (err) {
                 that.$message.error("连接失败")
-                console.log("err")
-                //todo 等待函数 sleep
-                that.ws()
+                that.sleep(2000);
+                //todo 尝试重连
                 // //连接失败,重新登陆
                 // that.$alert('请重新登陆', '提示', {
                 //     confirmButtonText: '确定',
