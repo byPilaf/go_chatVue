@@ -63,63 +63,70 @@ var app = new Vue({
         },
         ws: function () {
             var that = this
-            var ws = new WebSocket("ws://127.0.0.1:7999/ws?user_token=" + that.user_token)
-            ws.onerror = function (err) {
-                //连接失败,重新登陆
-                that.$alert('请重新登陆', '提示', {
-                    confirmButtonText: '确定',
-                    callback: function () {
-                        window.location.replace("/login")
-                    }
-                });
-            };
-            ws.onmessage = function (event) {
-                var resMes = JSON.parse(event.data)
-                switch (resMes.mes_type) {
-                    case 0: //系统消息
-                        that.$message("系统消息: " + resMes.data)
-                        break
-                    case 1: //用户状态消息
-                        if (resMes.data == "offline") {
-                            if (resMes.from_user_token == that.user_token) {
-                                //自己下线了
-                                //连接失败,重新登陆
-                                that.$alert('您已经在其他地方登录', '提示', {
-                                    confirmButtonText: '确定',
-                                    callback: function () {
-                                        window.location.replace("/login")
-                                    }
-                                });
-                            } else {
-                                for (var i = 0; i < that.onlineUserList.length; i++) {
-                                    if (that.onlineUserList[i] == resMes.from_user_name) {
-                                        //下线
-                                        that.$message(resMes.from_user_name + "下线了")
-                                        that.onlineUserList.splice(i, 1)
-                                    }
-                                }
-                            }
-                        }
-                        if (resMes.data == "online") {
-                            if (that.onlineUserList.indexOf(resMes.from_user_name) == -1) {
-                                that.onlineUserList.push(resMes.from_user_name)
-                                if (that.user_token != resMes.from_user_token) {
-                                    that.$message(resMes.from_user_name + "上线了")
-                                }
-                            }
-                        }
-                        break
-                    case 2: //聊天消息
-                    case 3: //群聊消息
-                        that.reUserMes.push(resMes)
-                        that.scrollToBottom()
-                        break
-                    case 4: //隐藏消息
-                        //心跳检测
-                        if (resMes.code == 200) {
+            while (true) {
+                var ws = new WebSocket("ws://127.0.0.1:7999/ws?user_token=" + that.user_token)
+                ws.onerror = function (err) {
+                    //连接失败,重新登陆
+                    //尝试重新连接
+                    that.$message.error(err)
+                    sleep(2000); // 延时函数，单位ms
+                    // that.$alert('请重新登陆', '提示', {
+                    //     confirmButtonText: '确定',
+                    //     callback: function () {
+                    //         window.location.replace("/login")
+                    //     }
+                    // });
+                };
 
-                        }
-                        break
+                ws.onmessage = function (event) {
+                    var resMes = JSON.parse(event.data)
+                    switch (resMes.mes_type) {
+                        case 0: //系统消息
+                            that.$message("系统消息: " + resMes.data)
+                            break
+                        case 1: //用户状态消息
+                            if (resMes.data == "offline") {
+                                if (resMes.from_user_token == that.user_token) {
+                                    //自己下线了
+                                    //连接失败,重新登陆
+                                    that.$alert('您已经在其他地方登录', '提示', {
+                                        confirmButtonText: '确定',
+                                        callback: function () {
+                                            window.location.replace("/login")
+                                        }
+                                    });
+                                } else {
+                                    for (var i = 0; i < that.onlineUserList.length; i++) {
+                                        if (that.onlineUserList[i] == resMes.from_user_name) {
+                                            //下线
+                                            that.$message(resMes.from_user_name + "下线了")
+                                            that.onlineUserList.splice(i, 1)
+                                        }
+                                    }
+                                }
+                            }
+                            if (resMes.data == "online") {
+                                if (that.onlineUserList.indexOf(resMes.from_user_name) == -1) {
+                                    that.onlineUserList.push(resMes.from_user_name)
+                                    if (that.user_token != resMes.from_user_token) {
+                                        that.$message(resMes.from_user_name + "上线了")
+                                    }
+                                }
+                            }
+                            break
+                        case 2: //聊天消息
+                        case 3: //群聊消息
+                            that.reUserMes.push(resMes)
+                            that.scrollToBottom()
+                            break
+                        case 4: //隐藏消息
+                            //心跳检测
+                            if (resMes.code == 200) {
+
+                            }
+                            break
+                    }
+                    break
                 }
             }
         },
