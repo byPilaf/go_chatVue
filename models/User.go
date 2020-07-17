@@ -27,15 +27,15 @@ type User struct {
 	UserWriteChan chan []byte `gorm:"-"`
 	// 接收到的私人消息队列
 	UserReadChan chan []byte `gorm:"-"`
-	//Status 当前用户状态,0=下线, 1=在线
-	Status int `gorm:"-"`
+	//StatusChan 当前用户状态,0=下线, 1=在线
+	StatusChan chan int `gorm:"-"`
 }
 
 //CreatChannel 创建频道
 func (user *User) CreatChannel() {
 	user.UserWriteChan = make(chan []byte, 100)
 	user.UserReadChan = make(chan []byte, 100)
-	user.Status = 1
+	user.StatusChan = make(chan int)
 	fmt.Println(user.Name, "上线了")
 }
 
@@ -47,8 +47,8 @@ func (user *User) BeatLine() {
 	}
 	mesJSON, _ := json.Marshal(beatMes)
 	for {
-
-		if user.Status == 0 {
+		status := <-user.StatusChan
+		if status == 1 {
 			break
 		}
 		//写入管道, 再专门发送
@@ -68,10 +68,8 @@ func (user *User) OffLine() {
 	offLineMes.MesType = UserStatusMesType
 	offLineMes.Code = 200
 	offLineMes.Data = "offline"
-
-	user.Status = 0
 	offLineMes.SendAllUserMes()
-
+	user.StatusChan <- 1
 	//从在线列表排除
 	delete(OnlineUsersMap, user.Token)
 }
