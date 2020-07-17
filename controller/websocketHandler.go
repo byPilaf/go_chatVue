@@ -32,17 +32,15 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 
 		//绑定已在线用户
 		user := models.OnlineUsersMap[userToken]
-		user.WsConn = wsConn
 		oldConn := user.WsConn
+		user.WsConn = wsConn
 		if oldConn != nil {
 			user.StatusChan <- 1
-			close(user.StatusChan)
 		} else {
 			user.CreatChannel()
 			go user.WaitForSendMes()
-			go user.BeatLine() //心跳检测
 		}
-
+		go user.BeatLine() //心跳检测
 		//发送上线通知
 		var mes models.WebSocketMessage
 		mes.Data = "online"

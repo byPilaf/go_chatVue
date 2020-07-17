@@ -27,7 +27,7 @@ type User struct {
 	UserWriteChan chan []byte `gorm:"-"`
 	// 接收到的私人消息队列
 	UserReadChan chan []byte `gorm:"-"`
-	//StatusChan 当前用户状态,0=下线, 1=在线
+	//StatusChan 当前用户状态 1=下线
 	StatusChan chan int `gorm:"-"`
 }
 
@@ -46,14 +46,15 @@ func (user *User) BeatLine() {
 		MesType: HiddenMesType,
 	}
 	mesJSON, _ := json.Marshal(beatMes)
-	for {
-		status := <-user.StatusChan
-		if status == 1 {
-			break
-		}
-		//写入管道, 再专门发送
+	//todo websocket 连接失败后如何处理
+forE:
+	select {
+	case <-user.StatusChan:
+		return
+	default:
 		user.UserWriteChan <- mesJSON
 		time.Sleep(time.Second * 5)
+		goto forE
 	}
 }
 
