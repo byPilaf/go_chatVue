@@ -18,7 +18,7 @@ var app = new Vue({
         input: "",
         //收到的消息列表
         reUserMes: [],
-        flag: false,
+        flag: true,
     },
     methods: {
         checkUser: function () {
@@ -121,6 +121,7 @@ var app = new Vue({
                     //连接失败,重新登陆
                     //尝试重新连接
                     that.$message.error(err)
+                    console.log(err)
                     that.flag = true
                     // that.$alert('请重新登陆', '提示', {
                     //     confirmButtonText: '确定',
