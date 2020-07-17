@@ -28,6 +28,7 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 		user := models.OnlineUsersMap[userToken]
 		if user.WsConn != nil {
 			//重新登陆
+			fmt.Println("flush")
 			// user.OffLine()
 			return
 		}
