@@ -21,14 +21,14 @@ type User struct {
 	Name string `json:"name" gorm:"not null;unique"`
 	Pass string `json:"pass" gorm:"not null"`
 	//WsConn 注册的ws连接器
-	WsConn *websocket.Conn `gorm:"-"`
-	Token  string          `gorm:"-"`
+	WsConn *websocket.Conn `json:"-" gorm:"-"`
+	Token  string          `json:"token" gorm:"-"`
 	//待发送的私人消息队列
-	UserWriteChan chan []byte `gorm:"-"`
+	UserWriteChan chan []byte `json:"-" gorm:"-"`
 	// 接收到的私人消息队列
-	UserReadChan chan []byte `gorm:"-"`
+	UserReadChan chan []byte `json:"-" gorm:"-"`
 	//StatusChan 当前用户状态 1=下线
-	StatusChan chan int `gorm:"-"`
+	StatusChan chan int `json:"-" gorm:"-"`
 }
 
 //CreatChannel 创建频道

@@ -113,8 +113,20 @@ var app = new Vue({
                             }
                         }
                         if (resMes.data == "online") {
-                            if (that.onlineUserList.indexOf(resMes.from_user_name) == -1) {
-                                that.onlineUserList.push(resMes.from_user_name)
+                            //判断列表中是否有此用户
+                            var isSelf = false
+                            for (var i = 0; i < that.onlineUserList.length; i++) {
+                                if (that.onlineUserList[i].name == resMes.from_user_name) {
+                                    isSelf = true
+                                    break
+                                }
+                            }
+                            if (!isSelf) {
+                                var user = {
+                                    "name": resMes.from_user_name,
+                                    "token": resMes.from_user_token
+                                }
+                                that.onlineUserList.push(user)
                                 if (that.user_token != resMes.from_user_token) {
                                     that.$message(resMes.from_user_name + "上线了")
                                 }

@@ -50,9 +50,9 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 //GetOnlineUserListHandler 获取在线用户列表
 func GetOnlineUserListHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
-		var userList []string
+		var userList []models.User
 		for _, user := range models.OnlineUsersMap {
-			userList = append(userList, user.Name)
+			userList = append(userList, *user)
 		}
 		data, err := json.Marshal(userList)
 		if err == nil {
