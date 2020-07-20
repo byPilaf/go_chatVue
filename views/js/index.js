@@ -71,18 +71,18 @@ var app = new Vue({
         ws: function () {
             var that = this
             var host = window.location.hostname + ":" + window.location.port
-            var ws = new WebSocket("ws://" + host + "/wws?user_token=" + that.user_token)
+            var ws = new WebSocket("ws://" + host + "/ws?user_token=" + that.user_token)
             ws.onerror = function (err) {
-                that.$message.error("连接失败")
-                that.sleep(2000);
+                // that.$message.error("连接失败")
+                // that.sleep(2000);
                 //todo 尝试重连
-                // //连接失败,重新登陆
-                // that.$alert('请重新登陆', '提示', {
-                //     confirmButtonText: '确定',
-                //     callback: function () {
-                //         window.location.replace("/login")
-                //     }
-                // });
+                //连接失败,重新登陆
+                that.$alert('websocket连接失败', '请重新登陆', {
+                    confirmButtonText: '确定',
+                    callback: function () {
+                        window.location.replace("/login")
+                    }
+                });
             }
 
             ws.onmessage = function (event) {

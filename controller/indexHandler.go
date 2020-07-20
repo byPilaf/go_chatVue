@@ -84,14 +84,13 @@ func GetUserMesHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		//接收json
 		decoder := json.NewDecoder(r.Body)
-		var message models.Mes //接收到的消息
+		var message models.WebSocketMessage //接收到的消息
 		err := decoder.Decode(&message)
 		if err == nil {
 			if models.OnlineUsersMap[message.FromUserToken] != nil {
 				reMes.Code = 200
 				reMes.MesType = models.ResponseMesType
 				reJSON, _ := json.Marshal(reMes)
-
 				//根据消息类型处理不同方法
 				switch message.MesType {
 				case models.GroupMesType:
@@ -102,9 +101,20 @@ func GetUserMesHandler(w http.ResponseWriter, r *http.Request) {
 					sendMes.MesType = message.MesType
 					sendMes.FromUserToken = message.FromUserToken
 					sendMes.SendAllUserMes()
-
 					w.Write(reJSON)
 					return
+				case models.UserMesType:
+					//todo 私信
+					//获取到接收者
+					toUser, ok := models.OnlineUsersMap[message.SendToUserToken]
+					if ok {
+						//在线
+						messageJSON, err := json.Marshal(message)
+						if err != nil {
+							return
+						}
+						toUser.UserWriteChan <- messageJSON
+					}
 				}
 			} else {
 				reMes.Code = 401

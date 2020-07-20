@@ -46,10 +46,10 @@ func (user *User) BeatLine() {
 		MesType: HiddenMesType,
 	}
 	mesJSON, _ := json.Marshal(beatMes)
-	//todo websocket 连接失败后如何处理
+
 forE:
 	select {
-	case <-user.StatusChan:
+	case <-user.StatusChan: //终止心跳
 		return
 	default:
 		user.UserWriteChan <- mesJSON
