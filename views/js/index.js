@@ -104,7 +104,7 @@ var app = new Vue({
                                 });
                             } else {
                                 for (var i = 0; i < that.onlineUserList.length; i++) {
-                                    if (that.onlineUserList[i] == resMes.from_user_name) {
+                                    if (that.onlineUserList[i].name == resMes.from_user_name) {
                                         //下线
                                         that.$message(resMes.from_user_name + "下线了")
                                         that.onlineUserList.splice(i, 1)
@@ -179,5 +179,9 @@ var app = new Vue({
                 container.scrollTop = container.scrollHeight;
             });
         },
+        //选择用户
+        selectUser: function (token) {
+            alert(token)
+        }
     },
 })

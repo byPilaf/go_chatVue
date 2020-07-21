@@ -40,7 +40,7 @@
                         <el-col :span="12">
                             <h5>在线列表</h5>
                             <el-menu default-active="2" class="el-menu-vertical-demo">
-                                <el-menu-item v-for="item in onlineUserList" index="0">
+                                <el-menu-item @click="selectUser(item.token)" v-for="item in onlineUserList" index="0">
                                     <i class="el-icon-user"></i>
                                     <span slot="title">[{item.name}]</span>
                                 </el-menu-item>
